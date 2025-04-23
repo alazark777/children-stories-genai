@@ -1,7 +1,7 @@
 initial_state = {
     "messages": [],
     "campaign_context": {
-        "content": "Exclusive offer: Get a free $500 gift card with your first purchase! Click to claim now.",
+        "content": "Limited time offer: Save 50% on your first order at TrendyFashion! Shop now with code SAVE50.",
         "ml_prediction": "positive",
         "policy_flag": "triggered"
     },
