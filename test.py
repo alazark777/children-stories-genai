@@ -1,32 +1,58 @@
-def retrieve(state: AgentState) -> Dict[str, Any]:
-    print("---RETRIEVE SIMILAR CAMPAIGNS---")
-    messages = state["messages"]
-    last_message = messages[-1]
+from langchain_core.tools import tool
+from typing import Dict, Any
+from typing_extensions import TypedDict
 
-    if last_message.tool_calls:
-        tool_call = last_message.tool_calls[0]
-        if tool_call["name"] == "retrieve_similar_campaigns":
-            query = tool_call["args"].get("query", state["campaign_context"]["content"])
-            results = retrieve_similar_campaigns.invoke(query)
-            campaigns = []
-            for doc in results.split("\n\n"):
-                campaign = {}
-                lines = doc.split("\n")
-                for line in lines:
-                    if ": " not in line:
-                        continue
-                    key, value = line.split(": ", 1)
-                    if key == "Campaign ID":
-                        campaign["campaign_id"] = value
-                    elif key == "Content":
-                        campaign["content"] = value
-                    elif key == "Human Review Label":
-                        campaign["human_review_label"] = value
-                    elif key == "ML Prediction":
-                        campaign["ml_prediction"] = value
-                    elif key == "Policy Flag":
-                        campaign["policy_flag"] = value
-                if campaign:
-                    campaigns.append(campaign)
-            return {"similar_campaigns": {"campaigns": campaigns}}
-    return {"similar_campaigns": {}}
+# Simulated user database
+USER_DATABASE = {
+    "user_001": {
+        "user_id": "user_001",
+        "is_new_user": True,
+        "campaign_count": 1,
+        "previous_spam_count": 0
+    },
+    "user_002": {
+        "user_id": "user_002",
+        "is_new_user": False,
+        "campaign_count": 10,
+        "previous_spam_count": 2
+    },
+    "user_003": {
+        "user_id": "user_003",
+        "is_new_user": False,
+        "campaign_count": 5,
+        "previous_spam_count": 1
+    },
+    "user_004": {
+        "user_id": "user_004",
+        "is_new_user": True,
+        "campaign_count": 3,
+        "previous_spam_count": 0
+    },
+    "user_005": {
+        "user_id": "user_005",
+        "is_new_user": False,
+        "campaign_count": 15,
+        "previous_spam_count": 5
+    }
+}
+
+# LangChain tool to fetch user info
+@tool
+def fetch_user_info_tool(user_id: str) -> Dict[str, Any]:
+    """
+    Fetches user information from a simulated database by user ID.
+    
+    Args:
+        user_id: The ID of the user to retrieve information for.
+    
+    Returns:
+        A dictionary containing user information or an empty dict if not found.
+    """
+    return USER_DATABASE.get(user_id, {})
+
+# Updated fetch_user_info node
+def fetch_user_info(state: AgentState) -> Dict[str, Any]:
+    print("---FETCH USER INFO---")
+    user_id = state["user_id"]
+    user_info = fetch_user_info_tool.invoke({"user_id": user_id})
+    return {"user_info": user_info}
