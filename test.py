@@ -1,15 +1,12 @@
 initial_state = {
     "messages": [],
     "campaign_context": {
-        "content": "Claim your free vacation now! Limited time offer, click to book!",
+        "content": "Exclusive offer: Get a free $500 gift card with your first purchase! Click to claim now.",
         "ml_prediction": "positive",
         "policy_flag": "triggered"
     },
-    "user_id": "user_003",
+    "user_id": "user_005",
     "similar_campaigns": {},
     "user_info": {},
     "final_decision": {}
 }
-result = app.invoke(initial_state)
-print(result["user_info"])
-print(result["final_decision"])
